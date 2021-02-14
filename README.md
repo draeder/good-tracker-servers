@@ -19,8 +19,8 @@ let cloudflare = {
 ## opts
 ```
 let opts = {
+    infohash: 'abc123', // infohash to announce, find
     interval: 30, // minutes
     attempts: 1, // number of attempts before dropping record
-    infohash: 'abc123', // infohash to announce, find
 }
 ```
