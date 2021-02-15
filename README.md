@@ -50,7 +50,7 @@ let resolve = dns.resolveTxt('trackers.peer.ooo', function (err, addresses, fami
 ```
 
 ## Browser
-Browsers do not have the ability to query DNS by default, so we use the (DoHjs)[https://github.com/byu-imaal/dohjs] library which allows us to use DNS over HTTPS for queries from the browser.
+Browsers do not have the ability to query DNS by default, so we use the [DoHjs](https://github.com/byu-imaal/dohjs) library which allows us to use DNS over HTTPS for queries from the browser.
 
 ```
 <script src="https://cdn.jsdelivr.net/npm/dohjs@latest/dist/doh.min.js"></script>
