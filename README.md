@@ -1,3 +1,5 @@
+## :construction: This is a work in progress . . . 
+
 # tracker-servers
 Builds a list of verified working webtorrent tracker servers and adds them as a TXT record for a specified subdomain hosted by Cloudflare.
 
