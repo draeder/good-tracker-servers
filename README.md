@@ -4,7 +4,7 @@ Builds a list of verified working webtorrent tracker servers and adds them as CN
 Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known tracker servers to confirm they are working, then add them to a hosted Cloudflare domain's DNS as CNAME records for a provided subdomain; otherwise drop them if they are no longer working.
 
 # Install
-<<heroku button>>
+(heroku button)
 ```
     npm i tracker-servers
 ```
