@@ -32,6 +32,22 @@ let opts = {
 To use the stored records, query the TXT records for the domain. This can be done on the server and on the browser.
 
 ## Server
+```
+const dns = require('dns')
+
+let trackers = []
+
+let resolve = dns.resolveTxt('trackers.peer.ooo', function (err, addresses, family) {
+    addresses.forEach(element => {
+        element.forEach(el => {
+            trackers.push(el)
+        })
+    })
+    console.log(trackers)
+    // do something with the array of trackers
+    // perhaps pass into a webtorrent script to announce a new webtorrent or infohash
+})
+```
 
 ## Browser
 Browsers do not have the ability to query DNS by default, so we use the DoHjs library.
