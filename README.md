@@ -1,7 +1,7 @@
 # tracker-servers
 Builds a list of verified working webtorrent tracker servers and adds them as a TXT record for a specified subdomain hosted by Cloudflare.
 
-Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known webtorrent tracker servers, confirm they are working, then add them to a hosted Cloudflare domain's DNS as a TXT record for a provided subdomain; otherwise drop them from DNS if they are no longer working.
+Uses (trackerslist)[https://github.com/ngosang/trackerslist] to poll known webtorrent tracker servers, confirm they are working, then add them to a hosted Cloudflare domain's DNS as a TXT record for a provided subdomain; otherwise drop them from DNS if they are no longer working.
 
 # Install
 ```
