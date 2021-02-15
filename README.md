@@ -75,4 +75,4 @@ resolver.query('trackers.peer.ooo', 'TXT')
 ```
 
 ## Demo
-A working demo is running for the domain `trackers.peer.ooo` which can be used now in your webtorrent projects.
+A working demo is running for the domain `trackers.peer.ooo` which can be tested in your webtorrent projects.
