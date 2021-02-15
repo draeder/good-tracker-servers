@@ -5,7 +5,7 @@ Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known track
 
 # Install
 ```
-npm i tracker-servers
+
 ```
 
 # Usage
