@@ -54,8 +54,7 @@ Browsers do not have the ability to query DNS by default, so we use the DoHjs li
 
 ```
 <script src="https://cdn.jsdelivr.net/npm/dohjs@latest/dist/doh.min.js"></script>
-
-const doh = require('dohjs')
+<script>
 
 const resolver = new doh.DohResolver('https://1.1.1.1/dns-query')
 
@@ -64,11 +63,13 @@ resolver.query('trackers.peer.ooo', 'TXT')
   .then(response => {
     response.answers.forEach(ans => {
         trackers.push(ans.data)
-        // do something with the array of trackers
-        // perhaps pass into a webtorrent script to announce a new webtorrent or infohash
     })
+    console.log(trackers)
+    // do something with the array of trackers
+    // perhaps pass into a webtorrent script to announce a new webtorrent or infohash
   })
   .catch(err => console.error(err))
+</script>
 ```
 
 ## Demo
