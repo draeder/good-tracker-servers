@@ -1,7 +1,7 @@
 # tracker-servers
 Builds a list of verified working webtorrent tracker servers and adds them as a TXT record for a specified subdomain hosted by Cloudflare.
 
-Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known tracker servers to confirm they are working, then add them to a hosted Cloudflare domain's DNS as a TXT record for a provided subdomain; otherwise drop them if they are no longer working.
+Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known webtorrent tracker servers, confirm they are working, then add them to a hosted Cloudflare domain's DNS as a TXT record for a provided subdomain; otherwise drop them from DNS if they are no longer working.
 
 # Install
 ```
@@ -44,13 +44,13 @@ let resolve = dns.resolveTxt('trackers.peer.ooo', function (err, addresses, fami
         })
     })
     console.log(trackers)
-    // do something with the array of trackers
+    // do something with the trackers array
     // perhaps pass into a webtorrent script to announce a new webtorrent or infohash
 })
 ```
 
 ## Browser
-Browsers do not have the ability to query DNS by default, so we use the DoHjs library.
+Browsers do not have the ability to query DNS by default, so we use the DoHjs library which allows us to use DNS over HTTPS for queries from the browser.
 
 ```
 <script src="https://cdn.jsdelivr.net/npm/dohjs@latest/dist/doh.min.js"></script>
@@ -65,8 +65,8 @@ resolver.query('trackers.peer.ooo', 'TXT')
         trackers.push(ans.data)
     })
     console.log(trackers)
-    // do something with the array of trackers
-    // perhaps pass into a webtorrent script to announce a new webtorrent or infohash
+    // do something with the trackers array
+    // perhaps pass into a webtorrent script to fetch a webtorrent or infohash
   })
   .catch(err => console.error(err))
 </script>
