@@ -12,19 +12,19 @@ Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known webto
 
 # Usage
 
-## cloudflare
-```
-let cloudflare = {
-    zone: 'abc123', // zone ID
-    email: 'someone@example.com', // email address
-    auth: 'abc123', // auth key
-    subdomain: 'ws' // subdomain to use for added/updated record
-}
-```
-
 ## opts
 ```
 let opts = {
+    interval: 30, // minutes
+    attempts: 1, // number of attempts before dropping record
+    dns: false, // add record to dns using cloudflare. Must pass in the cloudflare object when true. [default = false]
+    cloudflare: 
+    {
+        zone: 'abc123', // zone ID
+        email: 'someone@example.com', // email address
+        auth: 'abc123', // auth key
+        subdomain: 'ws' // subdomain to use for added/updated record
+    },
     ignore: // array of trackers to ignore
     [
         'ws://tracker.sloppyta.co/announce',
@@ -34,13 +34,11 @@ let opts = {
         'wss://video.blender.org/tracker/socket',
         'wss://peertube.cpy.re/tracker/socket'
     ],
-    check: // array of addition trackers to check
+    check: // array of additional trackers to check
     [
         'wss://ws.peer.ooo',
         'ws://ws.peer.ooo'
-    ],
-    interval: 30, // minutes
-    attempts: 1, // number of attempts before dropping record
+    ]
 }
 ```
 
