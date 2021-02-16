@@ -44,7 +44,7 @@ let opts = {
 }
 ```
 
-# Retrieve and use the records
+# Retrieve the records from DNS
 To use the stored records, query the TXT records for the domain. This can be done on the server and on the browser.
 
 ## Server
