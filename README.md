@@ -16,6 +16,7 @@ Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known webto
 ```
 let cloudflare = {
     zone: 'abc123', // zone ID
+    email: 'someone@example.com', // email address
     auth: 'abc123', // auth key
     subdomain: 'ws' // subdomain to use for added CNAME records
 }
