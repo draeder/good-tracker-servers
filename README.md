@@ -1,9 +1,7 @@
 ## :construction: This is a work in progress . . . 
 
 # tracker-servers
-Builds a list of verified working webtorrent tracker servers and adds them as a TXT record for a specified subdomain hosted by Cloudflare.
-
-Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known webtorrent tracker servers, confirm they are working, then add each to a hosted Cloudflare domain's DNS as a TXT record for a provided subdomain; otherwise drop them from DNS if they are no longer responsive.
+Tests and returns an array working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist) and optionally adds them to a specified TXT record for a domain hosted by cloudlfare.
 
 # Install
 ```
@@ -42,8 +40,10 @@ let opts = {
 }
 ```
 
+# Example
+
 # Retrieve the records from DNS
-To use the stored records, query the TXT records for the domain. This can be done on the server and on the browser.
+To use the records stored in DNS, query the TXT records for the domain. This can be done on the server and on the browser.
 
 ## Server
 ```
