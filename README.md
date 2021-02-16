@@ -25,7 +25,16 @@ let cloudflare = {
 ## opts
 ```
 let opts = {
-    infohash: 'abc123', // infohash to announce, find
+    ignore: // array of trackers to ignore
+    [
+        'ws://tracker.sloppyta.co/announce',
+        'wss://tracker.lab.vvc.niif.hu/announce',
+        'wss://tracker.sloppyta.co/announce',
+        'wss://tube.privacytools.io/tracker/socket',
+        'wss://video.blender.org/tracker/socket',
+        'wss://peertube.cpy.re/tracker/socket'
+    ],
+    check: ['wss://ws.peer.ooo'], // array of trackers to check in addition to those from trackerslist
     interval: 30, // minutes
     attempts: 1, // number of attempts before dropping record
 }
