@@ -29,7 +29,7 @@ let trackers = []
 let servers = []
 function poll(){
     // poll trackers
-    fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_ws.txt`, {
+    fetch(`https://cdn.jsdelivr.net/gh/ngosang/trackerslist/trackers_all_ws.txt`, {
         method: 'GET',
         headers: {
             "Access-Control-Allow-Origin": "*",
