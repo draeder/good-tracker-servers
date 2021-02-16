@@ -18,9 +18,7 @@
   },
   "homepage": "https://github.com/draeder/tracker-servers#readme",
   "dependencies": {
-    "bittorrent-tracker": "^9.16.1",
-    "fetch": "^1.1.0",
-    "node-fetch": "^2.6.1",
-    "wrtc": "^0.4.7"
+    "fake-bittorrent-client": "0.0.4",
+    "node-fetch": "^2.6.1"
   }
 }

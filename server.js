@@ -1,8 +1,8 @@
 module.exports = TrackerServers
 
 const fetch = require('node-fetch')
-const Client = require('bittorrent-tracker')
-const wrtc = require('wrtc')
+const crypto = require('crypto')
+const { FakeBitTorrentClient } = require('fake-bittorrent-client')
 
 // Emitter
 const EventEmitter = require('events').EventEmitter;
@@ -16,7 +16,7 @@ util.inherits(TrackerServers, EventEmitter)
 
 TrackerServers.prototype.trackers = async function (event, opts, hash) { 
     if(event === 'get'){
-        poll()
+        //poll()
         // emit updatded trackers
     }
     if(event === 'poll'){
@@ -25,6 +25,8 @@ TrackerServers.prototype.trackers = async function (event, opts, hash) {
 }
 
 poll()
+let trackers = []
+let servers = []
 function poll(){
     // poll trackers
     fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_ws.txt`, {
@@ -37,142 +39,120 @@ function poll(){
     })
     .then(async res => {
         let data = await res.text()
-        console.log(data)
+        //console.log(data)
         let lines = data.split("\n")
-        let trackers = {}
-        test('wss://ws.peer.ooo', 443)
-        lines.forEach(element => {
-            if(element !== ''){
-                let url = new URL(element)
-                //console.log(url)
-
-                let port = url.port
-                let host = url.protocol + "//" + url.hostname
-                //console.log(port)
-                if(!url.port && url.protocol === 'ws') {
-                    port = '80'
-                    //trackers.push(url.protocol + ":" + url.hostname + ":" + url.port)
-                    //test(host, port)
-                } else 
-                if (!url.port && url.protocol === 'wss') {
-                    port = '443'
-                    //trackers.push(url.protocol + ":" + url.hostname)
-                    //test(host, port)
-                } else {
-                    //test(host, port)
-                }
-            }
+        servers = lines.filter(function(item){
+            return item !== '';
         })
-        //console.log(trackers)
+        console.log("Servers:", servers.length)
 
-        /*
-        let trackers = []
-        let lines = data.split("\n")
-        lines.forEach(element => {
-            if(element !== ''){
-                let cleaned = element.split('/')
-                let port = element.split(':')
-                console.log(port)
-                let built = cleaned[0] + '//' + cleaned[2]
-                trackers.push(built)
-            }
+        servers.forEach(element => {
+            let url = new URL(element)
+            //console.log(url)
+            
+            let port = url.port
+            let host = httper(element)
+            test(host)
         })
+        
+        //test(trackers)
         console.log(trackers)
-        */
-       //test(trackers)
+        length = trackers.length
     })
 }
+let count = 0
+function test(tracker){
+    //console.log(tracker)
 
-function test(tracker, port){
-    // test trackers
-    console.log(port)
-    var requiredOpts = {
-      infoHash: new Buffer.from('Test 1243'), // hex string or Buffer
-      peerId: new Buffer.from('Test 5265'), // hex string or Buffer
-      announce: [tracker], // list of tracker server urls
-      port: port // torrent client port, (in browser, optional)
+    let infoHash = function(){
+        return crypto.createHash('sha1').update(JSON.stringify(Math.random())).digest('hex')
     }
+    let hash = infoHash()
+    let peerId = infoHash()
 
-    var optionalOpts = {
-        getAnnounceOpts: function () {
-          // Provide a callback that will be called whenever announce() is called
-          // internally (on timer), or by the user
-          return {
-            uploaded: 0,
-            downloaded: 0,
-            left: 0,
-            customParam: 'blah' // custom parameters supported
-          }
-        },
-        // RTCPeerConnection config object (only used in browser)
-        rtcConfig: {},
-        // User-Agent header for http requests
-        userAgent: '',
-        // Custom webrtc impl, useful in node to specify [wrtc](https://npmjs.com/package/wrtc)
-        wrtc: {},
+    const trackerUrl = tracker
+    const torrentHash = hash
+    const options = {
+        peerId: peerId,
+        port: 31452 // Listen port ( for fake, API will never open a port )
+    };
+    
+    const client = new FakeBitTorrentClient(trackerUrl, torrentHash, options);
+    
+    const bytes = 1024
+    
+    client
+        .upload(bytes)
+        .then(() => {
+            //console.log(['Uploaded ', bytes, ' bytes to ', trackerUrl].join(''))
+            //console.log("Good deal",wser(trackerUrl))
+            insert(wser(trackerUrl))
+            counter()
+        })
+        .catch(err => {
+            console.log(trackerUrl, "Upload Failed", err)
+            //console.error(['Error : ', err].join(''))
+            remove(wser(trackerUrl))
+            counter()
+        })
+
+    client
+        .download(bytes)
+        .then(() => {
+            //console.log(['Downloaded ', bytes, ' bytes from ', trackerUrl].join(''))
+            //console.log("Good deal",wser(trackerUrl))
+            insert(wser(trackerUrl))
+            counter()
+        })
+        .catch(err => {
+            console.log(trackerUrl, "Download Failed", err)
+            remove(wser(trackerUrl))
+            //console.error(['Error : ', err].join(''))
+            counter()
+        })
+}
+
+function counter(){
+    count++
+    let percent = Math.round(((count/2)/servers.length)*100)
+    console.clear()
+    console.log("Testing trackers:", Math.round(((count/2)/servers.length)*100) + "% complete")
+    if(percent == 100){
+        console.log("Removed", servers.length - trackers.length, "trackers")
+        console.log(trackers)
     }
-
-    
-    var client = new Client(requiredOpts)
-    
-    client.on('error', function (err) {
-      // fatal client error!
-      console.log(err.message)
-    })
-    
-    client.on('warning', function (err) {
-      // a tracker was unavailable or sent bad data to the client. you can probably ignore it
-      console.log(err.message)
-    })
-    
-    // start getting peers from the tracker
-    client.start()
-    
-    client.on('update', function (data) {
-      console.log('got an announce response from tracker: ' + data.announce)
-      console.log('number of seeders in the swarm: ' + data.complete)
-      console.log('number of leechers in the swarm: ' + data.incomplete)
-    })
-    
-    client.once('peer', function (addr) {
-      console.log('found a peer: ' + addr) // 85.10.239.191:48623
-    })
-    
-    // announce that download has completed (and you are now a seeder)
-    client.complete()
-    
-    // force a tracker announce. will trigger more 'update' events and maybe more 'peer' events
-    client.update()
-    
-    // provide parameters to the tracker
-    client.update({
-      uploaded: 0,
-      downloaded: 0,
-      left: 0,
-      customParam: 'blah' // custom parameters supported
-    })
-    
-    // stop getting peers from the tracker, gracefully leave the swarm
-    client.stop()
-    
-    // ungracefully leave the swarm (without sending final 'stop' message)
-    client.destroy()
-    
-    // scrape
-    client.scrape()
-    
-    client.on('scrape', function (data) {
-      console.log('got a scrape response from tracker: ' + data.announce)
-      console.log('number of seeders in the swarm: ' + data.complete)
-      console.log('number of leechers in the swarm: ' + data.incomplete)
-      console.log('number of total downloads of this torrent: ' + data.downloaded)
-    })
+}
+function wser(uri){
+    let host
+    let url = new URL(uri)
+    if(url.protocol == 'http:'){
+        host = "ws://"+url.host+url.pathname
+    }
+    if(url.protocol == 'https:'){
+        host = "wss://"+url.host+url.pathname
+    }
+    return host
+}
+function httper(uri){
+    let host
+    let url = new URL(uri)
+    if(url.protocol == 'ws:'){
+        host = "http://"+url.host+url.pathname
+    }
+    if(url.protocol == 'wss:'){
+        host = "https://"+url.host+url.pathname
+    }
+    return host
 }
 
-function add(){
-    // add trackers
+function insert(element){
+    trackers.push(element)
+    trackers = [...new Set(trackers)]
+    //console.log(trackers)
 }
-
-function remove() {
+function remove(element) {
     // remove trackers
+    trackers.filter(x => x !== element)
+    trackers = [...new Set(trackers)]
+    //console.log(trackers)
 }
