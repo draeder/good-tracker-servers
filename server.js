@@ -87,13 +87,13 @@ function test(tracker){
             //console.log(['Uploaded ', bytes, ' bytes to ', trackerUrl].join(''))
             //console.log("Good deal",wser(trackerUrl))
             insert(wser(trackerUrl))
-            counter()
+            counter(trackerUrl)
         })
         .catch(err => {
             console.log(trackerUrl, "Upload Failed", err)
             //console.error(['Error : ', err].join(''))
             remove(wser(trackerUrl))
-            counter()
+            counter(trackerUrl)
         })
 
     client
@@ -102,21 +102,21 @@ function test(tracker){
             //console.log(['Downloaded ', bytes, ' bytes from ', trackerUrl].join(''))
             //console.log("Good deal",wser(trackerUrl))
             insert(wser(trackerUrl))
-            counter()
+            counter(trackerUrl)
         })
         .catch(err => {
             console.log(trackerUrl, "Download Failed", err)
             remove(wser(trackerUrl))
             //console.error(['Error : ', err].join(''))
-            counter()
+            counter(trackerUrl)
         })
 }
 
-function counter(){
+function counter(tracker){
     count++
     let percent = Math.round(((count/2)/servers.length)*100)
     console.clear()
-    console.log("Testing trackers:", Math.round(((count/2)/servers.length)*100) + "% complete")
+    console.log(`Testing tracker: ${tracker}`, Math.round(((count/2)/servers.length)*100) + "% complete")
     if(percent == 100){
         console.log("Removed", servers.length - trackers.length, "trackers")
         console.log(trackers)
