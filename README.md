@@ -1,7 +1,7 @@
 ## :construction: This is a work in progress . . . 
 
 # tracker-servers
-Tests and returns an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist) and optionally adds them to a specified TXT record for a domain hosted by cloudlfare.
+Tests then returns an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist), and optionally adds them to a specified TXT record for a domain hosted by cloudlfare.
 
 # Install
 ```
