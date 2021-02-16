@@ -18,7 +18,7 @@ let cloudflare = {
     zone: 'abc123', // zone ID
     email: 'someone@example.com', // email address
     auth: 'abc123', // auth key
-    subdomain: 'ws' // subdomain to use for added CNAME records
+    subdomain: 'ws' // subdomain to use for added/updated record
 }
 ```
 
@@ -34,7 +34,11 @@ let opts = {
         'wss://video.blender.org/tracker/socket',
         'wss://peertube.cpy.re/tracker/socket'
     ],
-    check: ['wss://ws.peer.ooo'], // array of trackers to check in addition to those from trackerslist
+    check: // array of addition trackers to check
+    [
+        'wss://ws.peer.ooo',
+        'ws://ws.peer.ooo'
+    ],
     interval: 30, // minutes
     attempts: 1, // number of attempts before dropping record
 }
