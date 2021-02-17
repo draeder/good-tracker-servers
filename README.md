@@ -1,7 +1,9 @@
 ## :construction: This is a work in progress . . . 
 
 # tracker-servers
-Tests then returns an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist), and optionally adds them to a specified TXT record for a domain hosted by cloudlfare.
+Tests, then returns an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist), then optionally adds them to a specified DNS TXT record for a domain hosted by cloudlfare.
+
+After the initial test, tracker-servers will periodically re-test the list of known-good tracker servers based on the interval specified in `opts`.
 
 # Install
 ```
@@ -9,13 +11,15 @@ Tests then returns an array of working tracker servers (HTTP, HTTPS, WS, WSS) fr
 ```
 
 # Usage
+```
+
+```
 
 ## opts
 ```
 let opts = {
-    interval: 30, // minutes
-    attempts: 1, // number of attempts before dropping record
-    dns: false, // add record to dns using cloudflare. Must pass in the cloudflare object when true. [default = false]
+    interval: 3, // minutes [default = 3]
+    dns: true, // add record to dns using cloudflare. Must pass in the cloudflare object when true. [default = false]
     cloudflare: 
     {
         zone: 'abc123', // zone ID
@@ -25,15 +29,13 @@ let opts = {
     },
     ignore: // array of trackers to ignore
     [
-        'ws://tracker.sloppyta.co/announce',
-        'wss://tracker.lab.vvc.niif.hu/announce',
-        'wss://tracker.sloppyta.co/announce',
-        'wss://tube.privacytools.io/tracker/socket',
         'wss://video.blender.org/tracker/socket',
         'wss://peertube.cpy.re/tracker/socket'
     ],
     check: // array of additional trackers to check
     [
+        'https://ws.peer.ooo,
+        'http://ws.peer.ooo,
         'wss://ws.peer.ooo',
         'ws://ws.peer.ooo'
     ]
@@ -41,6 +43,8 @@ let opts = {
 ```
 
 # Example
+```
+```
 
 # Retrieve the records from DNS
 To use the records stored in DNS, query the TXT records for the domain. This can be done on the server and on the browser.

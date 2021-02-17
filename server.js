@@ -37,7 +37,7 @@ let finished = false
 poll()
 setInterval(()=>{
     if(finished == true){
-        finished == false
+        finished = false
         count = 0
         testing.splice(0, testing.length)
         servers.splice(0, servers.length)
@@ -62,36 +62,26 @@ function poll(){
         let p1 = fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_ws.txt`, fetchParams)
         .then(async res => {
             let data = await res.text()
-            let lines = data.split("\n")
-            lines.filter(function(item){
-                if(item != ''){
-                    servers.push(item)
-                }
-            })
+            process(data)
         })
-    
         let p2 = fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_https.txt`, fetchParams)
         .then(async res => {
             let data = await res.text()
-            let lines = data.split("\n")
-            lines.filter(function(item){
-                if(item != ''){
-                    servers.push(item)
-                }
-            })
+            process(data)
         })
-    
         let p3 = fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_http.txt`, fetchParams)
         .then(async res => {
             let data = await res.text()
+            process(data)
+        })
+        function process(data){
             let lines = data.split("\n")
             lines.filter(function(item){
                 if(item != ''){
                     servers.push(item)
                 }
             })
-        })
-    
+        }
         Promise.all([p1, p2, p3]).then((values) => {
             buildList(servers)
         })
