@@ -265,6 +265,7 @@ function counter(tracker){
             }
         })
         trackers = [... new Set(trackers)]
+        
         console.clear()
         console.log(percent + "% complete")
         console.log("Found", trackers.length, "working trackers")

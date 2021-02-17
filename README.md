@@ -1,9 +1,17 @@
 ## :construction: This is a work in progress . . . 
 
 # tracker-servers
-Tests, then returns an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist), then optionally adds them to a specified DNS TXT record for a domain hosted by cloudlfare.
+Tests, then emits an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist). 
+
+Optionally adds the array of working tracker servers to a specified DNS TXT record for a domain hosted by Cloudlfare. Since Cloudflare will not proxy signalling servers, TXT records are a great way to still make them available through DNS to clients.
 
 After the initial test, tracker-servers will periodically re-test the list of known-good tracker servers based on the interval specified in `opts`.
+
+## How tracker testing works
+- Retrieves all HTTP, HTTPS, WS, and WSS trackers from [trackerslist](https://github.com/ngosang/trackerslist), and any trackers passed in via `check` in the `opts` object.
+- Pings the host address of each tracker and removes dead hosts
+- Attempts to send a fake torrent upload, followed by a fake torrent download to each tracker. If either upload or download fails, the tracker is added to the `ignored` array and emitted
+- Finally, Successful trackers are added to the `trackers` array and emitted
 
 # Install
 ```
@@ -19,13 +27,14 @@ After the initial test, tracker-servers will periodically re-test the list of kn
 ```
 let opts = {
     interval: 3, // minutes [default = 3]
+    cons: true, // show status and results in the console [default = true]
     dns: true, // add record to dns using cloudflare. Must pass in the cloudflare object when true. [default = false]
-    cloudflare: 
+    cloudflare: // optional cloudflare object. Required when dns = true
     {
         zone: 'abc123', // zone ID
         email: 'someone@example.com', // email address
         auth: 'abc123', // auth key
-        subdomain: 'ws' // subdomain to use for added/updated record
+        subdomain: 'trackers' // subdomain to use for added/updated record
     },
     ignore: // array of trackers to ignore
     [
@@ -47,7 +56,7 @@ let opts = {
 ```
 
 # Retrieve the records from DNS
-To use the records stored in DNS, query the TXT records for the domain. This can be done on the server and on the browser.
+To use the records stored in DNS, query the TXT records for the domain. This can be performed by the server or the browser:
 
 ## Server
 ```
