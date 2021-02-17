@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/draeder/tracker-servers#readme",
   "dependencies": {
+    "crypto": "^1.0.1",
     "fake-bittorrent-client": "^0.0.4",
-    "node-fetch": "^2.6.1"
+    "fetch": "^1.1.0",
+    "node-fetch": "^2.6.1",
+    "performance-now": "^2.1.0",
+    "ping": "^0.4.0"
   }
 }

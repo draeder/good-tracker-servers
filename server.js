@@ -1,8 +1,10 @@
 module.exports = TrackerServers
 
+var ping = require('ping');
 const fetch = require('node-fetch')
 const crypto = require('crypto')
 const { FakeBitTorrentClient } = require('fake-bittorrent-client')
+const fs = require('fs')
 
 // Emitter
 const EventEmitter = require('events').EventEmitter;
@@ -24,46 +26,128 @@ TrackerServers.prototype.trackers = async function (event, opts, hash) {
     }
 }
 
-poll()
-let trackers = []
 let servers = []
-function poll(){
-    // poll trackers
-    fetch(`https://cdn.jsdelivr.net/gh/ngosang/trackerslist/trackers_all_ws.txt`, {
-        method: 'GET',
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization"
-        }
-    })
-    .then(async res => {
-        let data = await res.text()
-        //console.log(data)
-        let lines = data.split("\n")
-        servers = lines.filter(function(item){
-            return item !== '';
-        })
-        console.log("Servers:", servers.length)
-
-        servers.forEach(element => {
-            let url = new URL(element)
-            //console.log(url)
-            
-            let port = url.port
-            let host = httper(element)
-            test(host)
-        })
-        
-        //test(trackers)
-        console.log(trackers)
-        length = trackers.length
-    })
-}
+let trackers = []
+let ignored = []
+let testing = []
+let alive = []
 let count = 0
-function test(tracker){
-    //console.log(tracker)
+let finished = false
+//poll()
+poll()
+setInterval(()=>{
+    if(finished == true){
+        finished == false
+        count = 0
+        testing.splice(0, testing.length)
+        servers.splice(0, servers.length)
+        ignored.splice(0, ignored.length)
+        alive.splice(0, alive.length)
+        poll()
+    }
+}, 180000)
 
+function poll(){
+    if(trackers.length === 0){
+        let fetchParams = 
+        {
+            method: 'GET',
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+                "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization"
+            }
+        }
+        
+        let p1 = fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_ws.txt`, fetchParams)
+        .then(async res => {
+            let data = await res.text()
+            let lines = data.split("\n")
+            lines.filter(function(item){
+                if(item != ''){
+                    servers.push(item)
+                }
+            })
+        })
+    
+        let p2 = fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_https.txt`, fetchParams)
+        .then(async res => {
+            let data = await res.text()
+            let lines = data.split("\n")
+            lines.filter(function(item){
+                if(item != ''){
+                    servers.push(item)
+                }
+            })
+        })
+    
+        let p3 = fetch(`https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_http.txt`, fetchParams)
+        .then(async res => {
+            let data = await res.text()
+            let lines = data.split("\n")
+            lines.filter(function(item){
+                if(item != ''){
+                    servers.push(item)
+                }
+            })
+        })
+    
+        Promise.all([p1, p2, p3]).then((values) => {
+            buildList(servers)
+        })
+    } else {
+        console.log("servers", servers.length)
+        console.log("trackers", trackers.length)
+        console.log("trackers",trackers)
+        buildList(trackers)
+    }
+}
+
+function buildList(list){
+
+    list.forEach(element => {
+        let url = new URL(element)
+        testing.push({original: element, ping: url.hostname})
+    })
+
+    var cfg = {
+        timeout: 0.001
+    }
+
+    let c = 0
+
+    testing.forEach(function(host){
+
+        ping.sys.probe(host.ping, function(isAlive){
+            c++
+            let percent = (c/testing.length)*100
+            var msg = isAlive ? 'host ' + host.ping + ' is alive' : 'host ' + host.ping + ' is dead'
+            console.clear()
+            console.log(`Pinging tracker ${c}/${testing.length} (${percent}% complete) - `,msg)
+            
+            if(isAlive){
+                alive.push(host.original)
+            }
+
+            if(c === list.length){
+                alive.forEach(element => {
+                    let url = new URL(element)            
+                    if(url.protocol == "ws:" || url.protocol == "wss:"){
+                        host = httper(element)
+                    } else {
+                        host = element
+                    }
+                    test(host)
+                })
+
+            }
+        });
+    }, cfg)
+}
+
+let perf = {}
+let start
+function test(tracker){
     let infoHash = function(){
         return crypto.createHash('sha1').update(JSON.stringify(Math.random())).digest('hex')
     }
@@ -80,20 +164,21 @@ function test(tracker){
     const client = new FakeBitTorrentClient(trackerUrl, torrentHash, options);
     
     const bytes = 1024
-    
+
     client
         .upload(bytes)
         .then(() => {
             //console.log(['Uploaded ', bytes, ' bytes to ', trackerUrl].join(''))
             //console.log("Good deal",wser(trackerUrl))
             counter(tracker)
-            insert(wser(trackerUrl))
+            insert(trackerUrl)
         })
         .catch(err => {
-            console.log(trackerUrl, "Upload Failed", err)
+            //console.log(trackerUrl, "Upload Failed", err)
             //console.error(['Error : ', err].join(''))
             counter(tracker)
-            remove(wser(trackerUrl))
+            remove(trackerUrl)
+            ignore(trackerUrl)
         })
 
     client
@@ -102,26 +187,18 @@ function test(tracker){
             //console.log(['Downloaded ', bytes, ' bytes from ', trackerUrl].join(''))
             //console.log("Good deal",wser(trackerUrl))
             counter(tracker)
-            insert(wser(trackerUrl))
+            insert(trackerUrl)
         })
         .catch(err => {
-            console.log(trackerUrl, "Download Failed", err)
+            //console.log(trackerUrl, "Download Failed", err)
             counter(tracker)
-            remove(wser(trackerUrl))
+            remove(trackerUrl)
+            ignore(trackerUrl)
             //console.error(['Error : ', err].join(''))
         })
+        //perf.push({tracker: tracker, perf: t1-t0})
 }
 
-function counter(tracker){
-    count++
-    let percent = Math.round(((count/2)/servers.length)*100)
-    console.clear()
-    console.log(`Testing tracker: ${tracker} - `, Math.round(((count/2)/servers.length)*100) + "% complete")
-    if(percent == 100){
-        console.log("Removed", servers.length - trackers.length, "trackers")
-        console.log(trackers)
-    }
-}
 function wser(uri){
     let host
     let url = new URL(uri)
@@ -133,6 +210,7 @@ function wser(uri){
     }
     return host
 }
+
 function httper(uri){
     let host
     let url = new URL(uri)
@@ -150,9 +228,58 @@ function insert(element){
     trackers = [...new Set(trackers)]
     //console.log(trackers)
 }
+
 function remove(element) {
     // remove trackers
     trackers.filter(x => x !== element)
     trackers = [...new Set(trackers)]
     //console.log(trackers)
+}
+
+function ignore(tracker){
+    ignored.push(tracker)
+    ignored = [...new Set(ignored)]
+}
+
+function counter(tracker){
+    count++
+    let percent = Math.round(((count/2)/alive.length)*100)
+    let i = Math.floor(count/2)
+    console.clear()
+    console.info(`Testing tracker ${Math.floor(count/2)}/${alive.length} (${percent}% complete): ${alive[i-1]}`)
+    if(!alive[i]){
+        percent = 100
+    }
+    if(percent == 100){
+        alive.filter(function(item){
+            let url = new URL(item)
+            if(url.protocol === "ws:"){
+                trackers.filter(function(element){
+                    let url1 = new URL(element)
+                    if(url.host == url1.host){
+                        const found = (el) => el === element;
+                        let index = trackers.findIndex(found)
+                        trackers[index] = item
+                    }
+                })
+            } else
+            if(url.protocol === "wss:"){
+                trackers.filter(function(element){
+                    let url1 = new URL(element)
+                    if(url.host == url1.host){
+                        const found = (el) => el === element;
+                        let index = trackers.findIndex(found)
+                        trackers[index] = item
+                    }
+                })
+            }
+        })
+        trackers = [... new Set(trackers)]
+        console.clear()
+        console.log(percent + "% complete")
+        console.log("Found", trackers.length, "working trackers")
+        console.log("Ignoring", ignored.length, "non-working trackers")
+        console.log(trackers)
+        finished = true
+    }
 }
