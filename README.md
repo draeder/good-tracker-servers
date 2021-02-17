@@ -1,9 +1,7 @@
 ## :construction: This is a work in progress . . . 
 
 # tracker-servers
-Builds a list of verified working webtorrent tracker servers and adds them as a TXT record for a specified subdomain hosted by Cloudflare.
-
-Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known webtorrent tracker servers, confirm they are working, then add each to a hosted Cloudflare domain's DNS as a TXT record for a provided subdomain; otherwise drop them from DNS if they are no longer responsive.
+Tests then returns an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist), and optionally adds them to a specified TXT record for a domain hosted by cloudlfare.
 
 # Install
 ```
@@ -12,27 +10,40 @@ Uses [trackerslist](https://github.com/ngosang/trackerslist) to poll known webto
 
 # Usage
 
-## cloudflare
-```
-let cloudflare = {
-    zone: 'abc123', // zone ID
-    email: 'someone@example.com', // email address
-    auth: 'abc123', // auth key
-    subdomain: 'ws' // subdomain to use for added CNAME records
-}
-```
-
 ## opts
 ```
 let opts = {
-    infohash: 'abc123', // infohash to announce, find
     interval: 30, // minutes
     attempts: 1, // number of attempts before dropping record
+    dns: false, // add record to dns using cloudflare. Must pass in the cloudflare object when true. [default = false]
+    cloudflare: 
+    {
+        zone: 'abc123', // zone ID
+        email: 'someone@example.com', // email address
+        auth: 'abc123', // auth key
+        subdomain: 'ws' // subdomain to use for added/updated record
+    },
+    ignore: // array of trackers to ignore
+    [
+        'ws://tracker.sloppyta.co/announce',
+        'wss://tracker.lab.vvc.niif.hu/announce',
+        'wss://tracker.sloppyta.co/announce',
+        'wss://tube.privacytools.io/tracker/socket',
+        'wss://video.blender.org/tracker/socket',
+        'wss://peertube.cpy.re/tracker/socket'
+    ],
+    check: // array of additional trackers to check
+    [
+        'wss://ws.peer.ooo',
+        'ws://ws.peer.ooo'
+    ]
 }
 ```
 
-# Retrieve and use the records
-To use the stored records, query the TXT records for the domain. This can be done on the server and on the browser.
+# Example
+
+# Retrieve the records from DNS
+To use the records stored in DNS, query the TXT records for the domain. This can be done on the server and on the browser.
 
 ## Server
 ```
