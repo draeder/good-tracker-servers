@@ -218,14 +218,12 @@ function insert(element){
     trackers = [...new Set(trackers)]
     //console.log(trackers)
 }
-
 function remove(element) {
     // remove trackers
     trackers.filter(x => x !== element)
     trackers = [...new Set(trackers)]
     //console.log(trackers)
 }
-
 function ignore(tracker){
     ignored.push(tracker)
     ignored = [...new Set(ignored)]
@@ -236,7 +234,7 @@ function counter(tracker){
     let percent = Math.round(((count/2)/alive.length)*100)
     let i = Math.floor(count/2)
     console.clear()
-    console.info(`Testing tracker ${Math.floor(count/2)}/${alive.length} (${percent}% complete): ${alive[i-1]}`)
+    console.info(`Testing tracker ${Math.floor(count/2)}/${alive.length} (${percent}% complete): ${alive[i]}`)
     if(!alive[i]){
         percent = 100
     }
@@ -265,12 +263,13 @@ function counter(tracker){
             }
         })
         trackers = [... new Set(trackers)]
-        
+        let date_ob = new Date().toLocaleTimeString()
         console.clear()
-        console.log(percent + "% complete")
-        console.log("Found", trackers.length, "working trackers")
-        console.log("Ignoring", ignored.length, "non-working trackers")
-        console.log(trackers)
+        console.log(percent + "% complete", date_ob)
+        console.log("Found", trackers.length, "responsive trackers")
+        console.log("Ignoring", ignored.length, "unresponsive trackers")
+        console.log("Responsive:",trackers)
+        console.log("Ignored:",ignored)
         finished = true
     }
 }

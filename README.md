@@ -3,9 +3,9 @@
 # tracker-servers
 Tests, then emits an array of working tracker servers (HTTP, HTTPS, WS, WSS) from [trackerslist](https://github.com/ngosang/trackerslist). 
 
-Optionally adds the array of working tracker servers to a specified DNS TXT record for a domain hosted by Cloudlfare. Since Cloudflare will not proxy signalling servers, TXT records are a great way to still make them available through DNS to clients.
-
 After the initial test, tracker-servers will periodically re-test the list of known-good tracker servers based on the interval specified in `opts`.
+
+Optionally add the array of working tracker servers to a specified DNS TXT record for a domain hosted by Cloudlfare. Since Cloudflare does not proxy signalling servers, TXT records are a great way to still make them available through DNS to clients.
 
 ## How tracker testing works
 - Retrieves all HTTP, HTTPS, WS, and WSS trackers from [trackerslist](https://github.com/ngosang/trackerslist), and any trackers passed in via `check` in the `opts` object.
@@ -27,7 +27,21 @@ After the initial test, tracker-servers will periodically re-test the list of kn
 ```
 let opts = {
     interval: 3, // minutes [default = 3]
-    cons: true, // show status and results in the console [default = true]
+    console: true, // show status and results in the console [default = true]
+    trackerslist: true, // get trackers to check from trackerslist [default = true]. If set to false, use custom list specified by `check` parameter
+    recheck: false, // always recheck the trackers from trackerslist [default = false]
+    ignore: // array of trackers to ignore
+    [
+        'wss://video.blender.org/tracker/socket',
+        'wss://peertube.cpy.re/tracker/socket'
+    ],
+    check: // array of additional trackers to check. Required if `trackerslist` is set to false.
+    [
+        'https://ws.peer.ooo,
+        'http://ws.peer.ooo,
+        'wss://ws.peer.ooo',
+        'ws://ws.peer.ooo'
+    ],
     dns: true, // add record to dns using cloudflare. Must pass in the cloudflare object when true. [default = false]
     cloudflare: // optional cloudflare object. Required when dns = true
     {
@@ -36,18 +50,6 @@ let opts = {
         auth: 'abc123', // auth key
         subdomain: 'trackers' // subdomain to use for added/updated record
     },
-    ignore: // array of trackers to ignore
-    [
-        'wss://video.blender.org/tracker/socket',
-        'wss://peertube.cpy.re/tracker/socket'
-    ],
-    check: // array of additional trackers to check
-    [
-        'https://ws.peer.ooo,
-        'http://ws.peer.ooo,
-        'wss://ws.peer.ooo',
-        'ws://ws.peer.ooo'
-    ]
 }
 ```
 
