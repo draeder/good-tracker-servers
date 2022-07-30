@@ -22,7 +22,7 @@
     "crypto": "^1.0.1",
     "fake-bittorrent-client": "^0.0.5",
     "fetch": "^1.1.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "performance-now": "^2.1.0",
     "ping": "^0.4.0",
     "universal-ws": "^0.2.9"
